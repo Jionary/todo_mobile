@@ -3801,6 +3801,18 @@
   dependencies:
     tslib "^2.8.0"
 
+"@tanstack/query-core@5.100.6":
+  version "5.100.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.100.6.tgz#2f6dc032aaae1f327d85d3b977e6d530c948a91f"
+  integrity sha512-Os2CPUr98to98RYm+D4qGqGkiffn7MGSyl2547a4MljVkHE30AMJRqTiyCqBfMwzAx/I91vCkAxp5tHSla6Twg==
+
+"@tanstack/react-query@^5.100.6":
+  version "5.100.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.100.6.tgz#f69aefc2136b1e7126e630e0d7881cf7b7e25c77"
+  integrity sha512-uVSrps0PV16Cxmcn2rvL+dUhwTpTUtiRW347AEeYxMZXO2pZe9ja7E24PAMGoQ5u2g89DD8u4QhOviBk+RN8RA==
+  dependencies:
+    "@tanstack/query-core" "5.100.6"
+
 "@testing-library/jest-dom@^6.9.1":
   version "6.9.1"
   resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-6.9.1.tgz#7613a04e146dd2976d24ddf019730d57a89d56c2"

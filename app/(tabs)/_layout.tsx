@@ -53,6 +53,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="prueba_backend"
+        options={{
+          title: "Conexión backend",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="paperplane.fill" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
