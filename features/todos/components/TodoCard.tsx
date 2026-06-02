@@ -52,7 +52,7 @@ export function TodoCard({ item, onToggle, onEdit, onDelete }: TodoCardProps) {
         <View className="flex-1">
           <Text
             className={`text-base font-bold ${
-              item.completed ? "text-zinc-500 line-through" : "text-zinc-50"
+              item.completed ? "text-zinc-300 line-through" : "text-zinc-50"
             }`}
           >
             {item.title}

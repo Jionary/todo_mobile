@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# Todo Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicacion movil para gestion de listas y tareas. El proyecto fue desarrollado con Expo React Native y consume un backend propio construido con Quarkus, MySQL y Firebase Admin SDK.
 
-## Get started
+## Backend deployado
 
-1. Install dependencies
+Status publico:
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```txt
+https://todo-mobile-backend-f8gn.onrender.com/status
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+La app movil consume el backend deployado desde `services/api.ts`.
 
-## Learn more
+## Tecnologias
 
-To learn more about developing your project with Expo, look at the following resources:
+- Expo React Native
+- TypeScript
+- Expo Router
+- Firebase Authentication
+- Firebase ID Token / JWT
+- Axios con instancia personalizada e interceptors
+- React Query
+- AsyncStorage
+- NativeWind / Tailwind
+- Quarkus Java
+- MySQL
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Funcionalidades
 
-## Join the community
+- Login con Firebase Authentication
+- Persistencia de sesion con token
+- Envio de token Bearer al backend
+- Navegacion protegida
+- Perfil de usuario
+- Logout funcional
+- CRUD de listas
+- CRUD de tareas
+- Marcar tareas como completadas o pendientes
+- Busqueda por listas y tareas
+- Estados de loading
+- Estados de error
+- Componentes reutilizables
 
-Join our community of developers creating universal apps.
+## Estructura principal
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```txt
+app/                 Rutas y pantallas con Expo Router
+components/          Componentes compartidos de UI/layout
+features/auth/       Autenticacion, sesion y perfil
+features/lists/      Listas, servicios, componentes, queries y mutations
+features/todos/      Tareas, servicios, componentes, queries y mutations
+features/search/     Busqueda
+services/api.ts      Instancia Axios con interceptors
+```
+
+## Ejecutar el frontend
+
+Instalar dependencias:
+
+```bash
+npm install
+```
+
+Iniciar Expo:
+
+```bash
+npx expo start -c
+```
+
+Opciones:
+
+- Escanear el QR con Expo Go para probar en celular.
+- Presionar `w` para probar en navegador.
+
+## Usuario de prueba
+
+```txt
+Email: jio@gmail.com
+Password: [password configurado en Firebase]
+```
+
+## Configuracion del backend
+
+El backend utiliza variables de entorno para conectarse a MySQL y Firebase Admin SDK:
+
+```env
+DB_USERNAME=
+DB_PASSWORD=
+DB_URL=
+CORS_ORIGINS=
+FIREBASE_SERVICE_ACCOUNT=
+```
