@@ -1,6 +1,8 @@
+import { getCurrentUser } from "@/features/auth/services/auth.api";
+import { auth } from "@/features/auth/services/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import React, { useState } from "react";
 import {
   Alert,
@@ -10,8 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../../firebase";
-
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,25 +25,35 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
+
     try {
-      // 1. Autenticación con Firebase
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      // 2. Obtener y mostrar el Token JWT
       const token = await userCredential.user.getIdToken();
-      console.log("Token obtenido: " + token);
-
-      // 3. Guardar el token
       await AsyncStorage.setItem("token", token);
+
+      await getCurrentUser();
 
       router.replace("/");
     } catch (error: any) {
       console.error(error);
-      Alert.alert("Error de Login", error.message);
+
+      await AsyncStorage.removeItem("token");
+
+      if (auth.currentUser) {
+        await signOut(auth);
+      }
+
+      const message =
+        error.response?.status === 401
+          ? "Tu usuario existe en Firebase, pero no está registrado en la base de datos."
+          : error.message;
+
+      Alert.alert("Error de Login", message);
     } finally {
       setLoading(false);
     }
