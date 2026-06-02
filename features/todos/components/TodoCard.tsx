@@ -6,8 +6,8 @@ import { TodoView } from "../types/todo.types";
 type TodoCardProps = {
   item: TodoView;
   onToggle?: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
 const priorityLabel = {
@@ -30,18 +30,24 @@ const priorityTextClassName = {
 
 export function TodoCard({ item, onToggle, onEdit, onDelete }: TodoCardProps) {
   const priority = item.priority ?? "low";
+  const hasActions = onEdit || onDelete;
 
   return (
     <View className="mb-3 rounded-lg border border-zinc-800 bg-zinc-950 p-4">
       <View className="flex-row items-start gap-3">
         <Pressable
           onPress={onToggle}
-          className={`mt-1 h-5 w-5 rounded border ${
+          disabled={!onToggle}
+          className={`mt-1 h-6 w-6 items-center justify-center rounded border ${
             item.completed
-              ? "border-blue-500 bg-blue-500"
-              : "border-zinc-600 bg-transparent"
+              ? "border-indigo-400 bg-indigo-500"
+              : "border-zinc-500 bg-zinc-900"
           }`}
-        />
+        >
+          {item.completed ? (
+            <Text className="text-xs font-bold text-white">✓</Text>
+          ) : null}
+        </Pressable>
 
         <View className="flex-1">
           <Text
@@ -76,21 +82,40 @@ export function TodoCard({ item, onToggle, onEdit, onDelete }: TodoCardProps) {
         </View>
       </View>
 
-      <View className="mt-4 flex-row gap-2">
+      {onToggle ? (
         <Pressable
-          className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
-          onPress={onEdit}
+          className={`mt-4 h-10 items-center justify-center rounded-lg ${
+            item.completed ? "bg-zinc-800" : "bg-indigo-500"
+          }`}
+          onPress={onToggle}
         >
-          <Text className="font-semibold text-zinc-200">Editar</Text>
+          <Text className="font-semibold text-white">
+            {item.completed ? "Marcar pendiente" : "Marcar completada"}
+          </Text>
         </Pressable>
+      ) : null}
 
-        <Pressable
-          className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
-          onPress={onDelete}
-        >
-          <Text className="font-semibold text-red-200">Eliminar</Text>
-        </Pressable>
-      </View>
+      {hasActions ? (
+        <View className="mt-3 flex-row gap-2">
+          {onEdit ? (
+            <Pressable
+              className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
+              onPress={onEdit}
+            >
+              <Text className="font-semibold text-zinc-200">Editar</Text>
+            </Pressable>
+          ) : null}
+
+          {onDelete ? (
+            <Pressable
+              className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
+              onPress={onDelete}
+            >
+              <Text className="font-semibold text-red-200">Eliminar</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

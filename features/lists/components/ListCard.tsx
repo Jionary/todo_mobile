@@ -6,11 +6,13 @@ import { ListView } from "../types/list.types";
 type ListCardProps = {
   item: ListView;
   onOpen: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
 export function ListCard({ item, onOpen, onEdit, onDelete }: ListCardProps) {
+  const hasActions = onEdit || onDelete;
+
   return (
     <View className="mb-3 rounded-lg border border-zinc-800 bg-zinc-950 p-4">
       <View className="mb-2 flex-row items-start justify-between gap-3">
@@ -60,19 +62,27 @@ export function ListCard({ item, onOpen, onEdit, onDelete }: ListCardProps) {
           <Text className="font-semibold text-white">Abrir</Text>
         </Pressable>
 
-        <Pressable
-          className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
-          onPress={onEdit}
-        >
-          <Text className="font-semibold text-zinc-200">Editar</Text>
-        </Pressable>
+        {hasActions ? (
+          <>
+            {onEdit ? (
+              <Pressable
+                className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
+                onPress={onEdit}
+              >
+                <Text className="font-semibold text-zinc-200">Editar</Text>
+              </Pressable>
+            ) : null}
 
-        <Pressable
-          className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
-          onPress={onDelete}
-        >
-          <Text className="font-semibold text-red-200">Eliminar</Text>
-        </Pressable>
+            {onDelete ? (
+              <Pressable
+                className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
+                onPress={onDelete}
+              >
+                <Text className="font-semibold text-red-200">Eliminar</Text>
+              </Pressable>
+            ) : null}
+          </>
+        ) : null}
       </View>
     </View>
   );
