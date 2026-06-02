@@ -89,7 +89,7 @@ export function TodoCard({ item, onToggle, onEdit, onDelete }: TodoCardProps) {
           }`}
           onPress={onToggle}
         >
-          <Text className="font-semibold text-white">
+          <Text className="font-bold text-white">
             {item.completed ? "Marcar pendiente" : "Marcar completada"}
           </Text>
         </Pressable>
@@ -99,19 +99,19 @@ export function TodoCard({ item, onToggle, onEdit, onDelete }: TodoCardProps) {
         <View className="mt-3 flex-row gap-2">
           {onEdit ? (
             <Pressable
-              className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
+              className="h-10 flex-1 items-center justify-center rounded-lg bg-zinc-800"
               onPress={onEdit}
             >
-              <Text className="font-semibold text-zinc-200">Editar</Text>
+              <Text className="font-bold text-white">Editar</Text>
             </Pressable>
           ) : null}
 
           {onDelete ? (
             <Pressable
-              className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
+              className="h-10 flex-1 items-center justify-center rounded-lg bg-red-600"
               onPress={onDelete}
             >
-              <Text className="font-semibold text-red-200">Eliminar</Text>
+              <Text className="font-bold text-white">Eliminar</Text>
             </Pressable>
           ) : null}
         </View>

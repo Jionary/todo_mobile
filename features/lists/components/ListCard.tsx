@@ -26,59 +26,59 @@ export function ListCard({ item, onOpen, onEdit, onDelete }: ListCardProps) {
           ) : null}
         </View>
 
-        <View className="rounded-md bg-blue-500/15 px-2 py-1">
-          <Text className="text-sm font-bold text-blue-300">
+        <View className="rounded-md bg-blue-600 px-2 py-1">
+          <Text className="text-sm font-bold text-white">
             {item.completionPercentage}%
           </Text>
         </View>
       </View>
 
-      <Text className="text-sm text-zinc-400">
+      <Text className="text-sm text-zinc-300">
         {item.completedTodos}/{item.totalTodos} tareas completadas
       </Text>
 
       <View className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-800">
         <View
-          className="h-full rounded-full bg-blue-500"
+          className="h-full rounded-full bg-indigo-500"
           style={{ width: `${item.completionPercentage}%` }}
         />
       </View>
 
-      {item.categories.length > 0 && (
+      {item.categories.length > 0 ? (
         <View className="mt-3 flex-row flex-wrap gap-2">
           {item.categories.map((category) => (
             <View key={category} className="rounded-full bg-zinc-800 px-2 py-1">
-              <Text className="text-xs text-zinc-300">{category}</Text>
+              <Text className="text-xs text-white">{category}</Text>
             </View>
           ))}
         </View>
-      )}
+      ) : null}
 
       <View className="mt-4 flex-row gap-2">
         <Pressable
           className="h-10 flex-1 items-center justify-center rounded-lg bg-indigo-500"
           onPress={onOpen}
         >
-          <Text className="font-semibold text-white">Abrir</Text>
+          <Text className="font-bold text-white">Abrir</Text>
         </Pressable>
 
         {hasActions ? (
           <>
             {onEdit ? (
               <Pressable
-                className="h-10 flex-1 items-center justify-center rounded-lg border border-zinc-700"
+                className="h-10 flex-1 items-center justify-center rounded-lg bg-zinc-800"
                 onPress={onEdit}
               >
-                <Text className="font-semibold text-zinc-200">Editar</Text>
+                <Text className="font-bold text-white">Editar</Text>
               </Pressable>
             ) : null}
 
             {onDelete ? (
               <Pressable
-                className="h-10 flex-1 items-center justify-center rounded-lg bg-red-500/20"
+                className="h-10 flex-1 items-center justify-center rounded-lg bg-red-600"
                 onPress={onDelete}
               >
-                <Text className="font-semibold text-red-200">Eliminar</Text>
+                <Text className="font-bold text-white">Eliminar</Text>
               </Pressable>
             ) : null}
           </>
