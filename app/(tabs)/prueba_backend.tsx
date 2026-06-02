@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useStatus } from "../../hooks/useStatus";
 
 export default function PruebaBackend() {
@@ -33,7 +33,7 @@ export default function PruebaBackend() {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212", // 👈 clave
@@ -51,4 +51,4 @@ const styles = {
     fontSize: 16,
     marginBottom: 10,
   },
-};
+});
