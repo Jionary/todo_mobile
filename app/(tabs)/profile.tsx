@@ -20,7 +20,6 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     setLoggingOut(true);
     setUnauthenticated();
-    router.replace("/login");
 
     try {
       await logout();

@@ -2,8 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.178:8080",
-  timeout: 10000,
+  baseURL: "https://todo-mobile-backend-f8gn.onrender.com",
+  timeout: 60000,
 });
 
 api.interceptors.request.use(async (config) => {

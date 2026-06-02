@@ -51,7 +51,7 @@ export default function LoginScreen() {
     try {
       const firebaseSession = await withTimeout(
         loginWithFirebasePassword(email, password),
-        10000
+        30000
       );
 
       await AsyncStorage.setItem("token", firebaseSession.idToken);
@@ -59,7 +59,7 @@ export default function LoginScreen() {
       await getCurrentUser();
 
       setAuthenticated();
-      router.replace("/");
+      router.replace("/(tabs)");
     } catch (error: any) {
       console.error(error);
 
@@ -69,6 +69,8 @@ export default function LoginScreen() {
       const message =
         error.response?.status === 401
           ? "Tu usuario existe en Firebase, pero no está registrado en la base de datos."
+          : error.code === "ECONNABORTED"
+          ? "El backend tardó demasiado en responder. Espera unos segundos e intenta de nuevo."
           : error.code === "auth/network-request-failed" ||
             error.message === "La conexión con Firebase tardó demasiado."
           ? "No se pudo conectar con Firebase. Revisa tu conexión o intenta de nuevo."
