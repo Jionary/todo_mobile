@@ -1,137 +1,149 @@
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, RefreshControl } from "react-native";
-
-import TaskListCard from "@/components/TaskListCard/TaskListCard";
-import { Box } from "@/components/ui/box";
-import { Spinner } from "@/components/ui/spinner";
+import { AppScreen } from "@/components/layout/AppScreen";
+import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { Text } from "@/components/ui/text";
-import { TaskList } from "@/types/TaskList";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ListFormModal } from "@/features/lists/components/ListFormModal";
+import { ListListSection } from "@/features/lists/components/ListListSection";
+import {
+  useCreateListMutation,
+  useDeleteListMutation,
+  useUpdateListMutation,
+} from "@/features/lists/mutations/useListMutation";
+import { useListsQuery } from "@/features/lists/queries/useListsQuery";
+import { ListView } from "@/features/lists/types/list.types";
+import { Href, useRouter } from "expo-router";
+import { useState } from "react";
+import { Pressable } from "react-native";
 
-const MOCK_TASK_LISTS: TaskList[] = [
-  {
-    id: "1",
-    title: "Computer Science",
-    subtitle: "Algorithms and data structures",
-    percentage: 60,
-    tags: ["school", "important"],
-    idColor: "bg-blue-500",
-    idIcon: "code",
-  },
-  {
-    id: "2",
-    title: "History",
-    subtitle: "World War II notes",
-    percentage: 30,
-    tags: ["reading"],
-    idColor: "bg-green-500",
-    idIcon: "menu-book",
-  },
-  {
-    id: "3",
-    title: "Math",
-    subtitle: "Calculus exercises",
-    percentage: 90,
-    tags: ["practice", "exam"],
-    idColor: "bg-purple-500",
-    idIcon: "functions",
-  },
-];
+const DEFAULT_COLOR_ID = "11111111-1111-1111-1111-111111111111";
 
 export default function HomeScreen() {
-  const [lists, setLists] = useState<TaskList[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: lists = [],
+    isLoading,
+    isRefetching,
+    error,
+    refetch,
+  } = useListsQuery();
 
-  const fetchTaskLists = async (): Promise<TaskList[]> => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const shouldFail = Math.random() < 0.3;
+  const router = useRouter();
 
-        if (shouldFail) {
-          reject(new Error("Failed to fetch lists"));
-        } else {
-          resolve(MOCK_TASK_LISTS);
-        }
-      }, 1000);
-    });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingList, setEditingList] = useState<ListView | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const createListMutation = useCreateListMutation();
+  const updateListMutation = useUpdateListMutation();
+  const deleteListMutation = useDeleteListMutation();
+
+  const isSubmitting =
+    createListMutation.isPending || updateListMutation.isPending;
+
+  const openCreateModal = () => {
+    setEditingList(null);
+    setTitle("");
+    setDescription("");
+    setIsModalOpen(true);
   };
 
-  const loadLists = async (fromRefresh: boolean = false) => {
-    try {
-      setError(null);
-      if (fromRefresh) {
-        setLoading(true);
-      }
-      const data = await fetchTaskLists();
-      setLists(data);
-      if (fromRefresh) {
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("Something went wrong");
-      setLists([]);
+  const openEditModal = (list: ListView) => {
+    setEditingList(list);
+    setTitle(list.title);
+    setDescription(list.description ?? "");
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingList(null);
+    setTitle("");
+    setDescription("");
+  };
+
+  const handleSubmitList = () => {
+    if (!title.trim()) {
+      return;
     }
+
+    if (editingList) {
+      updateListMutation.mutate(
+        {
+          id: editingList.id,
+          payload: {
+            title: title.trim(),
+            description: description.trim(),
+            colorId: DEFAULT_COLOR_ID,
+            categoryIds: [],
+          },
+        },
+        {
+          onSuccess: closeModal,
+        }
+      );
+
+      return;
+    }
+
+    createListMutation.mutate(
+      {
+        title: title.trim(),
+        description: description.trim(),
+        colorId: DEFAULT_COLOR_ID,
+        categoryIds: [],
+      },
+      {
+        onSuccess: closeModal,
+      }
+    );
   };
 
-  useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-      await loadLists();
-      setLoading(false);
-    };
-
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadLists();
-    setRefreshing(false);
+  const handleDeleteList = (list: ListView) => {
+    deleteListMutation.mutate(list.id);
   };
 
   return (
-    <SafeAreaView className="flex-1">
-      <Box className="flex-1 p-4">
-        <Text className="text-2xl mb-4">Task Lists</Text>
+    <AppScreen>
+      <ScreenHeader
+        title="Mis listas"
+        subtitle="Organiza tus pendientes por categorías."
+      />
 
-        {/* Loading */}
-        {loading && (
-          <Box className="mt-4">
-            <Spinner size="large" color="grey" />
-          </Box>
-        )}
+      <Pressable
+        className="mb-4 h-12 items-center justify-center rounded-lg bg-indigo-500"
+        onPress={openCreateModal}
+      >
+        <Text className="font-bold text-white">Crear lista</Text>
+      </Pressable>
 
-        {/* Error */}
-        {!loading && error && (
-          <>
-            <Text className="text-red-500 mb-2">{error}</Text>
-            <Pressable onPress={() => loadLists(true)}>
-              <Text className="text-blue-500 underline">Retry</Text>
-            </Pressable>
-          </>
-        )}
+      <ListListSection
+        lists={lists}
+        isLoading={isLoading}
+        isRefetching={isRefetching}
+        hasError={Boolean(error)}
+        onRefresh={refetch}
+        onRetry={refetch}
+        onOpenList={(list) =>
+          router.push({
+            pathname: "/lists/[id]",
+            params: { id: list.id, title: list.title },
+          } as unknown as Href)
+        }
+        onEditList={openEditModal}
+        onDeleteList={handleDeleteList}
+      />
 
-        {/* Empty */}
-        {!loading && !error && lists.length === 0 && (
-          <Text>No tasks available</Text>
-        )}
-
-        {/* List */}
-        {!loading && !error && (
-          <FlatList
-            data={lists}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <TaskListCard item={item} />}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        )}
-      </Box>
-    </SafeAreaView>
+      <ListFormModal
+        visible={isModalOpen}
+        title={editingList ? "Editar lista" : "Nueva lista"}
+        listTitle={title}
+        description={description}
+        isSubmitting={isSubmitting}
+        submitLabel={editingList ? "Guardar" : "Crear"}
+        onChangeTitle={setTitle}
+        onChangeDescription={setDescription}
+        onClose={closeModal}
+        onSubmit={handleSubmitList}
+      />
+    </AppScreen>
   );
 }
-
