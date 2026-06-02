@@ -19,8 +19,14 @@ const DEFAULT_DUE_DATE = "2026-06-10";
 
 export default function ListDetailScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const params = useLocalSearchParams<{
+    id?: string | string[];
+    title?: string | string[];
+  }>();
   const listId = Array.isArray(params.id) ? params.id[0] : params.id ?? "";
+  const listTitle = Array.isArray(params.title)
+    ? params.title[0]
+    : params.title ?? "Tareas";
 
   const {
     data: todos = [],
@@ -119,9 +125,9 @@ export default function ListDetailScreen() {
   return (
     <AppScreen>
       <ScreenHeader
-        title="Tareas"
+        title={listTitle}
         subtitle="Pendientes de la lista seleccionada."
-        backLabel="Volver a listas"
+        backLabel="Listas"
         onBack={() => router.back()}
       />
 

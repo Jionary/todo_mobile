@@ -125,7 +125,7 @@ export default function HomeScreen() {
         onOpenList={(list) =>
           router.push({
             pathname: "/lists/[id]",
-            params: { id: list.id },
+            params: { id: list.id, title: list.title },
           } as unknown as Href)
         }
         onEditList={openEditModal}
