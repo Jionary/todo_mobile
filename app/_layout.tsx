@@ -8,9 +8,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { AuthProvider } from "@/features/auth/auth-context";
+import { AuthGate } from "@/features/auth/auth-gate";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-
 import { queryClient } from "@/lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 
@@ -22,23 +23,28 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <QueryClientProvider client={queryClient}>
-      <GluestackUIProvider mode="dark">
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: "modal", title: "Modal" }}
-            />
-            <Stack.Protected guard={__DEV__}>
-              <Stack.Screen name="storybook" />
-            </Stack.Protected>
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </GluestackUIProvider>
+      <AuthProvider>
+        <AuthGate>
+          <GluestackUIProvider mode="dark">
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal", title: "Modal" }}
+                />
+                <Stack.Protected guard={__DEV__}>
+                  <Stack.Screen name="storybook" />
+                </Stack.Protected>
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </GluestackUIProvider>
+        </AuthGate>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

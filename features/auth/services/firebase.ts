@@ -1,7 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDEqS4HtN6Sx0Efknnp0psje_w_tSs4PHU",
   authDomain: "todolistgrupo1-204f7.firebaseapp.com",
   projectId: "todolistgrupo1-204f7",

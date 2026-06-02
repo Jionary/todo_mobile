@@ -1,8 +1,8 @@
+import { useAuth } from "@/features/auth/auth-context";
 import { getCurrentUser } from "@/features/auth/services/auth.api";
-import { auth } from "@/features/auth/services/firebase";
+import { loginWithFirebasePassword } from "@/features/auth/services/firebase-rest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import React, { useState } from "react";
 import {
   Alert,
@@ -16,7 +16,28 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const router = useRouter();
+  const { setAuthenticated, setUnauthenticated } = useAuth();
+
+  const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("La conexión con Firebase tardó demasiado."));
+      }, ms);
+
+      promise
+        .then((value) => {
+          clearTimeout(timeout);
+          resolve(value);
+        })
+        .catch((error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+    });
+  };
 
   const handleLogin = async () => {
     if (email === "" || password === "") {
@@ -25,33 +46,35 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
+    setErrorMessage(null);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
+      const firebaseSession = await withTimeout(
+        loginWithFirebasePassword(email, password),
+        10000
       );
 
-      const token = await userCredential.user.getIdToken();
-      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("token", firebaseSession.idToken);
 
       await getCurrentUser();
 
+      setAuthenticated();
       router.replace("/");
     } catch (error: any) {
       console.error(error);
 
       await AsyncStorage.removeItem("token");
-
-      if (auth.currentUser) {
-        await signOut(auth);
-      }
+      setUnauthenticated();
 
       const message =
         error.response?.status === 401
           ? "Tu usuario existe en Firebase, pero no está registrado en la base de datos."
-          : error.message;
+          : error.code === "auth/network-request-failed" ||
+            error.message === "La conexión con Firebase tardó demasiado."
+          ? "No se pudo conectar con Firebase. Revisa tu conexión o intenta de nuevo."
+          : error.message ?? "No se pudo iniciar sesión.";
+
+      setErrorMessage(message);
 
       Alert.alert("Error de Login", message);
     } finally {
@@ -78,7 +101,7 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
       />
-
+      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleLogin}
@@ -128,5 +151,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  error: {
+    color: "#dc2626",
+    marginBottom: 12,
+    textAlign: "center",
   },
 });
